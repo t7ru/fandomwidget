@@ -24,14 +24,14 @@ jobs:
               run: |
                   mkdir -p dist/windows
                   cp dist/fandomwidget.exe dist/windows/
-                  cp README.md config.example.json widget-sample.json LICENSE dist/windows/
+                  cp README.md config.example.json widget.example.json LICENSE dist/windows/
                   cd dist/windows && zip -r ../../fandomwidget-windows-amd64.zip .
 
             - name: Package Linux
               run: |
                   mkdir -p dist/linux
                   cp dist/fandomwidget dist/linux/
-                  cp README.md config.example.json widget-sample.json LICENSE dist/linux/
+                  cp README.md config.example.json widget.example.json LICENSE dist/linux/
                   cd dist/linux && tar -czf ../../fandomwidget-linux-amd64.tar.gz .
 
             - uses: softprops/action-gh-release@v3

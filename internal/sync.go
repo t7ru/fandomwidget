@@ -2,9 +2,11 @@ package internal
 
 import (
 	"bytes"
+	"cmp"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"strconv"
@@ -46,7 +48,7 @@ func (b *Bot) syncAll() {
 		return
 	}
 	wikis := make(map[string]WikiInfo)
-	for _, link := range links {
+	for discordID, link := range links {
 		wiki, ok := wikis[link.Wiki]
 		if !ok {
 			var err error
@@ -57,25 +59,22 @@ func (b *Bot) syncAll() {
 			}
 			wikis[link.Wiki] = wiki
 		}
-		if err := b.syncLink(link, wiki); err != nil {
-			log.Printf("auto sync %s: %v", link.DiscordID, err)
+		if err := b.syncLink(discordID, link, wiki); err != nil {
+			log.Printf("auto sync %s: %v", discordID, err)
 		}
 	}
 }
 
-func (b *Bot) syncLink(link UserLink, wiki WikiInfo) error {
+func (b *Bot) syncLink(discordID string, link UserLink, wiki WikiInfo) error {
 	profile, err := b.fandom.GetProfile(link.Wiki, link.UserID)
 	if err != nil {
 		return err
 	}
-	return syncWidget(b.appID, b.token, link.DiscordID, wiki, profile)
+	return syncWidget(b.appID, b.token, discordID, wiki, profile)
 }
 
 func syncWidget(appID, token, discordID string, wiki WikiInfo, p UserProfile) error {
-	display := p.DisplayName
-	if display == "" {
-		display = p.Username
-	}
+	display := cmp.Or(p.DisplayName, p.Username)
 	tags := strings.Join(p.Tags, ", ")
 	if tags == "" {
 		tags = "Editor"
@@ -142,9 +141,8 @@ func syncWidget(appID, token, discordID string, wiki WikiInfo, p UserProfile) er
 	}
 	defer res.Body.Close()
 	if res.StatusCode >= 300 {
-		var buf bytes.Buffer
-		buf.ReadFrom(res.Body)
-		return fmt.Errorf("discord sync %s: %w", res.Status, parseDiscordAPIError(buf.Bytes()))
+		body, _ := io.ReadAll(res.Body)
+		return fmt.Errorf("discord sync %s: %w", res.Status, parseDiscordAPIError(body))
 	}
 	return nil
 }

@@ -8,10 +8,9 @@ import (
 )
 
 type UserLink struct {
-	DiscordID string `json:"discord_id"`
-	Wiki      string `json:"wiki"`
-	Username  string `json:"username"`
-	UserID    int64  `json:"user_id"`
+	Wiki     string `json:"wiki"`
+	Username string `json:"username"`
+	UserID   int64  `json:"user_id"`
 }
 
 type Store struct {
@@ -29,13 +28,16 @@ func openStore(path string) (*Store, error) {
 		}
 		return nil, err
 	}
-	return s, json.Unmarshal(b, &s.links)
+	if err := json.Unmarshal(b, &s.links); err != nil {
+		return nil, err
+	}
+	return s, nil
 }
 
-func (s *Store) Save(u UserLink) error {
+func (s *Store) Save(discordID string, u UserLink) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	s.links[u.DiscordID] = u
+	s.links[discordID] = u
 	return s.write()
 }
 
@@ -49,12 +51,12 @@ func (s *Store) Get(discordID string) (UserLink, error) {
 	return u, nil
 }
 
-func (s *Store) All() []UserLink {
+func (s *Store) All() map[string]UserLink {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	out := make([]UserLink, 0, len(s.links))
-	for _, u := range s.links {
-		out = append(out, u)
+	out := make(map[string]UserLink, len(s.links))
+	for id, u := range s.links {
+		out[id] = u
 	}
 	return out
 }

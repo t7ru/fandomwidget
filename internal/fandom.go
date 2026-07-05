@@ -27,7 +27,6 @@ func newFandomClient(ua string) *FandomClient {
 }
 
 type UserProfile struct {
-	ID           int64
 	Username     string
 	DisplayName  string
 	Avatar       string
@@ -231,7 +230,6 @@ func (c *FandomClient) GetProfile(wiki string, userID int64) (UserProfile, error
 	}
 	reg, _ := out.UserData.Registration.(string)
 	return UserProfile{
-		ID:           out.UserData.ID,
 		Username:     out.UserData.Username,
 		DisplayName:  out.UserData.Name,
 		Avatar:       out.UserData.Avatar,

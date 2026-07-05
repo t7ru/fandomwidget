@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"strconv"
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
@@ -145,7 +146,11 @@ func (b *Bot) handleVerify(s *discordgo.Session, i *discordgo.InteractionCreate)
 	}
 
 	var fandomUserID int64
-	fmt.Sscan(userIDStr, &fandomUserID)
+	fandomUserID, err := strconv.ParseInt(userIDStr, 10, 64)
+	if err != nil {
+		followup(s, i, "Invalid verify button.")
+		return
+	}
 
 	profile, err := b.fandom.GetProfile(wiki, fandomUserID)
 	if err != nil {
@@ -160,11 +165,10 @@ func (b *Bot) handleVerify(s *discordgo.Session, i *discordgo.InteractionCreate)
 		return
 	}
 
-	if err := b.store.Save(UserLink{
-		DiscordID: uid,
-		Wiki:      wiki,
-		Username:  profile.Username,
-		UserID:    fandomUserID,
+	if err := b.store.Save(uid, UserLink{
+		Wiki:     wiki,
+		Username: profile.Username,
+		UserID:   fandomUserID,
 	}); err != nil {
 		followup(s, i, "Failed to save link.")
 		return
@@ -205,7 +209,7 @@ func (b *Bot) handleRefresh(s *discordgo.Session, i *discordgo.InteractionCreate
 		return
 	}
 
-	if err := b.syncLink(link, wikiInfo); err != nil {
+	if err := b.syncLink(uid, link, wikiInfo); err != nil {
 		b.followupSyncError(s, i, "Sync failed: ", err)
 		return
 	}

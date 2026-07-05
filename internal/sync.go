@@ -94,7 +94,7 @@ func syncWidget(appID, token, discordID string, wiki WikiInfo, p UserProfile) er
 		{Type: 1, Name: "tags", Value: tags},
 	}
 	if p.Bio != "" {
-		fields = append(fields, dynamicField{Type: 1, Name: "bio", Value: truncate(p.Bio, 120)})
+		fields = append(fields, dynamicField{Type: 1, Name: "bio", Value: truncate(p.Bio, 100)})
 	}
 	if p.Avatar != "" {
 		fields = append(fields, dynamicField{

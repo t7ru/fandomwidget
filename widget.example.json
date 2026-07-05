@@ -1,0 +1,51 @@
+{
+	"username": "Gabonnie",
+	"data": {
+		"dynamic": [
+			{
+				"type": 1,
+				"name": "display_name",
+				"value": "Torutofu, Folaano, Rahneez"
+			},
+			{ "type": 1, "name": "wiki_username", "value": "Gabonnie" },
+			{ "type": 1, "name": "wiki", "value": "@tds" },
+			{
+				"type": 1,
+				"name": "wiki_name",
+				"value": "Tower Defense Simulator Wiki"
+			},
+			{ "type": 1, "name": "edits", "value": "10,678" },
+			{ "type": 2, "name": "edit_count", "value": 10678 },
+			{ "type": 2, "name": "edit_goal", "value": 15000 },
+			{ "type": 2, "name": "posts", "value": 5103 },
+			{ "type": 1, "name": "registered", "value": "2020 November 20" },
+			{ "type": 1, "name": "tags", "value": "Administrator" },
+			{
+				"type": 1,
+				"name": "bio",
+				"value": "ello im gab i like visual novels :p"
+			},
+			{
+				"type": 3,
+				"name": "avatar",
+				"value": {
+					"url": "https://static.wikia.nocookie.net/c566ceec-b99a-489a-b5ee-fd3c1a3e2eec/thumbnail/width/400/height/400?format=webp"
+				}
+			},
+			{
+				"type": 3,
+				"name": "wiki_logo",
+				"value": {
+					"url": "https://static.wikia.nocookie.net/tower-defense-sim/images/e/e6/Site-logo.png/revision/latest?format=webp"
+				}
+			},
+			{
+				"type": 3,
+				"name": "wiki_favicon",
+				"value": {
+					"url": "https://static.wikia.nocookie.net/tower-defense-sim/images/4/4a/Site-favicon.ico/revision/latest?format=webp"
+				}
+			}
+		]
+	}
+}

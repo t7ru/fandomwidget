@@ -4,6 +4,7 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"log"
 	"strings"
@@ -176,8 +177,7 @@ func (b *Bot) handleVerify(s *discordgo.Session, i *discordgo.InteractionCreate)
 	}
 
 	if err := syncWidget(b.appID, b.token, uid, wikiInfo, profile); err != nil {
-		log.Println("sync:", err)
-		followup(s, i, "Linked, but widget sync failed: "+err.Error())
+		b.followupSyncError(s, i, "Linked, but widget sync failed: ", err)
 		return
 	}
 
@@ -206,8 +206,7 @@ func (b *Bot) handleRefresh(s *discordgo.Session, i *discordgo.InteractionCreate
 	}
 
 	if err := b.syncLink(link, wikiInfo); err != nil {
-		log.Println("sync:", err)
-		followup(s, i, "Sync failed: "+err.Error())
+		b.followupSyncError(s, i, "Sync failed: ", err)
 		return
 	}
 	followup(s, i, "Widget refreshed!")
@@ -261,4 +260,29 @@ func followup(s *discordgo.Session, i *discordgo.InteractionCreate, content stri
 		Content: content,
 		Flags:   discordgo.MessageFlagsEphemeral,
 	})
+}
+
+func oauthAuthorizeComponents(appID string) []discordgo.MessageComponent {
+	return []discordgo.MessageComponent{
+		discordgo.ActionsRow{Components: []discordgo.MessageComponent{
+			discordgo.Button{
+				Label: "Authorize",
+				Style: discordgo.LinkButton,
+				URL:   widgetAuthURL(appID),
+			},
+		}},
+	}
+}
+
+func (b *Bot) followupSyncError(s *discordgo.Session, i *discordgo.InteractionCreate, prefix string, err error) {
+	log.Println("sync:", err)
+	if errors.Is(err, ErrOAuthRequired) {
+		_, _ = s.FollowupMessageCreate(i.Interaction, true, &discordgo.WebhookParams{
+			Content:    prefix + "click **Authorize**, then run `/widget refresh`.",
+			Components: oauthAuthorizeComponents(b.appID),
+			Flags:      discordgo.MessageFlagsEphemeral,
+		})
+		return
+	}
+	followup(s, i, prefix+err.Error())
 }

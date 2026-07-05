@@ -1,14 +1,12 @@
 package internal
 
-import (
-	"fmt"
-	"net/url"
-)
+import "net/url"
 
 func widgetAuthURL(appID string) string {
-	return fmt.Sprintf(
-		"https://discord.com/oauth2/authorize?client_id=%s&redirect_uri=%s&response_type=token&scope=openid+sdk.social_layer",
-		appID,
-		url.QueryEscape("https://discord.com"),
-	)
+	q := url.Values{
+		"client_id":     {appID},
+		"response_type": {"token"},
+		"scope":         {"openid sdk.social_layer_presence"},
+	}
+	return "https://discord.com/oauth2/authorize?" + q.Encode()
 }

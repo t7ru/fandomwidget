@@ -3,12 +3,15 @@ package internal
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
 	"strings"
 	"time"
 )
+
+var ErrOAuthRequired = errors.New("oauth required")
 
 type dynamicField struct {
 	Type  int    `json:"type"`
@@ -185,7 +188,7 @@ func parseDiscordAPIError(body []byte) error {
 	case 20012:
 		return fmt.Errorf("%s (code %d): bot token does not belong to this application", api.Message, api.Code)
 	case 50001, 50026:
-		return fmt.Errorf("%s (code %d): open widget auth URL printed at bot startup", api.Message, api.Code)
+		return fmt.Errorf("%s (code %d): %w", api.Message, api.Code, ErrOAuthRequired)
 	default:
 		return fmt.Errorf("%s (code %d)", api.Message, api.Code)
 	}

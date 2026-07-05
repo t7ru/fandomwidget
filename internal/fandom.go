@@ -32,7 +32,6 @@ type UserProfile struct {
 	DisplayName  string
 	Avatar       string
 	Bio          string
-	Edits        string
 	LocalEdits   int
 	Posts        int
 	Registration string
@@ -213,15 +212,14 @@ func (c *FandomClient) GetProfile(wiki string, userID int64) (UserProfile, error
 
 	var out struct {
 		UserData struct {
-			ID           int64    `json:"id"`
-			Username     string   `json:"username"`
-			Avatar       string   `json:"avatar"`
-			Name         string   `json:"name"`
+			ID           int64       `json:"id"`
+			Username     string      `json:"username"`
+			Avatar       string      `json:"avatar"`
+			Name         string      `json:"name"`
 			Bio          string   `json:"bio"`
-			Edits        string   `json:"edits"`
 			LocalEdits   int      `json:"localEdits"`
 			Posts        int      `json:"posts"`
-			Registration string   `json:"registration"`
+			Registration any      `json:"registration"`
 			Tags         []string `json:"tags"`
 		} `json:"userData"`
 	}
@@ -231,16 +229,16 @@ func (c *FandomClient) GetProfile(wiki string, userID int64) (UserProfile, error
 	if out.UserData.ID == 0 {
 		return UserProfile{}, fmt.Errorf("profile not found")
 	}
+	reg, _ := out.UserData.Registration.(string)
 	return UserProfile{
 		ID:           out.UserData.ID,
 		Username:     out.UserData.Username,
 		DisplayName:  out.UserData.Name,
 		Avatar:       out.UserData.Avatar,
 		Bio:          out.UserData.Bio,
-		Edits:        out.UserData.Edits,
 		LocalEdits:   out.UserData.LocalEdits,
 		Posts:        out.UserData.Posts,
-		Registration: out.UserData.Registration,
+		Registration: reg,
 		Tags:         out.UserData.Tags,
 	}, nil
 }

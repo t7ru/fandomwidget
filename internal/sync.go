@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -85,7 +86,7 @@ func syncWidget(appID, token, discordID string, wiki WikiInfo, p UserProfile) er
 		{Type: 1, Name: "wiki_username", Value: p.Username},
 		{Type: 1, Name: "wiki", Value: "@" + wiki.Subdomain},
 		{Type: 1, Name: "wiki_name", Value: wiki.Name},
-		{Type: 1, Name: "edits", Value: p.Edits},
+		{Type: 1, Name: "edits", Value: formatWithCommas(p.LocalEdits)},
 		{Type: 2, Name: "edit_count", Value: p.LocalEdits},
 		{Type: 2, Name: "edit_goal", Value: editGoal(p.LocalEdits)},
 		{Type: 2, Name: "posts", Value: p.Posts},
@@ -172,6 +173,24 @@ func editGoal(edits int) int {
 		}
 	}
 	return (edits/5000 + 1) * 5000
+}
+
+func formatWithCommas(n int) string {
+	s := strconv.Itoa(n)
+	if len(s) <= 3 {
+		return s
+	}
+	var b strings.Builder
+	start := len(s) % 3
+	if start == 0 {
+		start = 3
+	}
+	b.WriteString(s[:start])
+	for i := start; i < len(s); i += 3 {
+		b.WriteByte(',')
+		b.WriteString(s[i : i+3])
+	}
+	return b.String()
 }
 
 type discordAPIError struct {

@@ -127,7 +127,7 @@ func syncWidget(appID, token, discordID string, wiki WikiInfo, p UserProfile) er
 		return err
 	}
 
-	url := fmt.Sprintf("https://discord.com/api/v9/applications/%s/users/%s/identities/0/profile", appID, discordID)
+	url := fmt.Sprintf("https://discord.com/api/v9/applications/%s/users/%s/identities/%s/profile", appID, discordID, discordID)
 	req, err := http.NewRequest(http.MethodPatch, url, bytes.NewReader(body))
 	if err != nil {
 		return err

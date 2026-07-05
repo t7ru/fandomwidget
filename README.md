@@ -2,6 +2,8 @@
 
 Discord profile widget bot for Fandom wiki stats.
 
+<img width="557" height="377" alt="example" src="https://github.com/user-attachments/assets/a2e957ba-67ea-48b0-88dd-1ac8d6689790" />
+
 ## Setup
 
 1. Create a [Discord application](https://discord.com/developers/applications), enable Social SDK then create a widget, field names samples are in `widget.example.json`.
